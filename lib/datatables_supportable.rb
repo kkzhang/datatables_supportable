@@ -13,7 +13,6 @@ module DatatablesSupportable
     def datatables(params, columns)
 
       self.total_count = self.count
-      self.dt_params = params
 
       #filtering
 
