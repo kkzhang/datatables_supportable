@@ -13,6 +13,7 @@ module DatatablesSupportable
     def datatables(params, columns)
 
       self.total_count = self.count
+      self.dt_params = params
 
       #filtering
 
@@ -54,6 +55,57 @@ module DatatablesSupportable
       end
 
       @comps
+    end
+
+
+    def as_datatables_json(params)
+
+      @datatables_columns = []
+      @datatables_mappings = {:index=>{}, :additional=>{}}
+      yield self
+
+
+      @comps = datatables(params, @datatables_columns)
+      _d = {:sEcho=>params[:sEcho],
+            :iTotalRecords=>@comps.length,
+            :iTotalDisplayRecords=>@comps.total_count,
+            :aaData=>[],
+            :DT_RowClass=>""
+      }
+
+      @comps.map do |c|
+        @datatables_mappings[:index].each_pair do |key,value|
+          if value.nil?
+            _d[:aaData][key]
+          end
+          _d[:aaData][key] = c[value]
+        end
+
+        @datatables_mappings[:additional].each_pair do |key,value|
+          _d[:aaData][key] = value
+        end
+      end
+
+      _d
+    end
+
+    def set_row(options={})
+      options = options.symbolize_keys
+      if options.has_key? :column
+        curr_length = @datatables_mappings[:index].length
+        @datatables_mappings[:index][curr_length] = options[:column]
+
+        if options.has_key? :searchable
+          @datatables_columns << options[:column]
+        end
+      elsif options.has_key? :value
+        if options.has_key? :name
+          @datatables_mappings[:additional][name] = options[:value]
+        else
+          curr_length = @datatables_mappings[:index].length
+          @datatables_mappings[:index][curr_length] = options[:value]
+        end
+      end
     end
   end
 end

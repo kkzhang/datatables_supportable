@@ -1,24 +1,20 @@
 # DatatablesSupportable
 
-TODO: Write a gem description
+Add Datatables support (AJAX mode) to ActiveRecord
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'datatables_supportable'
+    gem 'datatables_supportable', :git=>"https://github.com/kkzhang/datatables_supportable"
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install datatables_supportable
-
 ## Usage
 
-TODO: Write usage instructions here
+
 
 ## Contributing
 
