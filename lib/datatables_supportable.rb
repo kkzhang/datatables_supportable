@@ -25,7 +25,7 @@ module DatatablesSupportable
             _cond += "#{c} LIKE ? OR "
           end
         end
-        @comps = where(_cond, "%#{params[:sSearch]}%","%#{params[:sSearch]}%","%#{params[:sSearch]}%","%#{params[:sSearch]}%")
+        @comps = where(_cond, *Array.new(columns.length,"%#{params[:sSearch]}%"))
       else
         @comps = self
       end
