@@ -60,7 +60,8 @@ module DatatablesSupportable
     def as_datatables_json(params)
 
       @datatables_columns = []
-      @datatables_mappings = {:index=>{}, :additional=>{}}
+      @datatables_columns_idx = 0
+      @datatables_mappings = {}
       yield self
 
 
@@ -73,37 +74,41 @@ module DatatablesSupportable
       }
 
       @comps.map do |c|
-        @datatables_mappings[:index].each_pair do |key,value|
-          if value.nil?
-            _d[:aaData][key]
-          end
-          _d[:aaData][key] = c[value]
-        end
+        _temp = {}
 
-        @datatables_mappings[:additional].each_pair do |key,value|
-          _d[:aaData][key] = value
+        @datatables_mappings.each_pair do |key,value|
+          _temp[key] = value.gsub(/\[\$([^\]]+)\]/) do |word|
+            c[$1.to_sym]
+          end
+
         end
+        _d[:aaData] << _temp
       end
 
       _d
     end
 
+    def searchable(columns)
+
+      columns.each do |c|
+        @datatables_columns << c
+      end
+
+    end
+
     def set_row(options={})
       options = options.symbolize_keys
-      if options.has_key? :column
-        curr_length = @datatables_mappings[:index].length
-        @datatables_mappings[:index][curr_length] = options[:column]
+      if not options.has_key? :name
 
-        if options.has_key? :searchable
-          @datatables_columns << options[:column]
-        end
-      elsif options.has_key? :value
-        if options.has_key? :name
-          @datatables_mappings[:additional][name] = options[:value]
+        if options.has_key? :column
+          @datatables_mappings[@datatables_columns_idx] = "[$#{options[:column]}]"
         else
-          curr_length = @datatables_mappings[:index].length
-          @datatables_mappings[:index][curr_length] = options[:value]
+          @datatables_mappings[@datatables_columns_idx] = value
         end
+
+        @datatables_columns_idx += 1
+      else
+        @datatables_mappings[options[:name]] = options[:value]
       end
     end
   end
