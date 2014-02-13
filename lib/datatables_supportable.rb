@@ -10,7 +10,7 @@ module DatatablesSupportable
 
     attr_accessor :total_count
 
-    def datatables(params, ordering_columns, searchable_columns)
+    def datatables(params, orderable_columns, searchable_columns)
 
       self.total_count = self.count
 
@@ -34,15 +34,15 @@ module DatatablesSupportable
       #ordering
       if params[:iSortingCols].to_i > 0
         params[:iSortingCols].to_i.times do |index|
-            idx =  params["bSortable_#{index}"]
-            if params.has_key? "sSortDir_#{index}"
-              _order = params["sSortDir_#{index}"]
-              if _order == 'asc'
-                @comps = @comps.order(ordering_columns[idx])
-              else
-                @comps = @comps.order(ordering_columns[idx]=>:desc)
-              end
+          idx =  params["iSortCol_#{index}"].to_i
+          if params.has_key? "sSortDir_#{index}"
+            _order = params["sSortDir_#{index}"]
+            if _order == 'asc'
+              @comps = @comps.order(orderable_columns[idx])
+            else
+              @comps = @comps.order(orderable_columns[idx]=>:desc)
             end
+          end
         end
       end
 
