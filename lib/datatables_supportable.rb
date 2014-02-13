@@ -10,41 +10,39 @@ module DatatablesSupportable
 
     attr_accessor :total_count
 
-    def datatables(params, columns)
+    def datatables(params, ordering_columns, searchable_columns)
 
       self.total_count = self.count
 
-      #filtering
+      @comps = self
 
-      if (params.has_key? :sSearch) and not params[:sSearch].empty?
-        _cond = ""
-        columns.each_with_index do |c,index|
-          if index+1 == columns.length
-            _cond += "#{c} LIKE ?"
-          else
-            _cond += "#{c} LIKE ? OR "
+      #filtering
+      if searchable_columns.length > 0
+        if (params.has_key? :sSearch) and not params[:sSearch].empty?
+          _cond = ""
+          searchable_columns.each_with_index do |c,index|
+            if index+1 == searchable_columns.length
+              _cond += "#{c} LIKE ?"
+            else
+              _cond += "#{c} LIKE ? OR "
+            end
           end
+          @comps = where(_cond, *Array.new(searchable_columns.length,"%#{params[:sSearch]}%"))
         end
-        @comps = where(_cond, *Array.new(columns.length,"%#{params[:sSearch]}%"))
-      else
-        @comps = self
       end
 
-
-
       #ordering
-      if params.has_key? :iSortCol_0
+      if params[:iSortingCols].to_i > 0
         params[:iSortingCols].to_i.times do |index|
-          if params["bSortable_#{index}"]=='true'
+            idx =  params["bSortable_#{index}"]
             if params.has_key? "sSortDir_#{index}"
               _order = params["sSortDir_#{index}"]
               if _order == 'asc'
-                @comps = @comps.order(columns[index])
+                @comps = @comps.order(ordering_columns[idx])
               else
-                @comps = @comps.order(columns[index]=>:desc)
+                @comps = @comps.order(ordering_columns[idx]=>:desc)
               end
             end
-          end
         end
       end
 
@@ -59,13 +57,14 @@ module DatatablesSupportable
 
     def as_datatables_json(params)
 
-      @datatables_columns = []
+      @searchable_columns = []
+      @orderable_columns = []
       @datatables_columns_idx = 0
       @datatables_mappings = {}
       yield self
 
 
-      @comps = datatables(params, @datatables_columns)
+      @comps = datatables(params, @orderable_columns, @searchable_columns)
       _d = {:sEcho=>params[:sEcho],
             :iTotalRecords=>@comps.length,
             :iTotalDisplayRecords=>@comps.total_count,
@@ -88,10 +87,13 @@ module DatatablesSupportable
       _d
     end
 
-    def searchable(columns)
+    def searchable(*columns)
+      @searchable_columns = columns
+    end
 
-      columns.each do |c|
-        @datatables_columns << c
+    def orderable(columns)
+      columns.each_pair do |k,v|
+        @orderable_columns[v] = k
       end
 
     end
