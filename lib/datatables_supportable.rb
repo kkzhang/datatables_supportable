@@ -78,7 +78,7 @@ module DatatablesSupportable
 
         @datatables_mappings.each_pair do |key,value|
           _temp[key] = value.gsub(/\[\$([^\]]+)\]/) do |word|
-            c[$1.to_sym]
+            c.send $1.to_sym
           end
 
         end
