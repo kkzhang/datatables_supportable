@@ -17,6 +17,8 @@ module DatatablesSupportable
       @comps = self
 
       #filtering
+
+
       if searchable_columns.length > 0
         if (params.has_key? :sSearch) and not params[:sSearch].empty?
           _cond = ""
@@ -31,6 +33,7 @@ module DatatablesSupportable
         end
       end
 
+
       #ordering
       if params[:iSortingCols].to_i > 0
         params[:iSortingCols].to_i.times do |index|
@@ -38,13 +41,20 @@ module DatatablesSupportable
           if params.has_key? "sSortDir_#{index}"
             _order = params["sSortDir_#{index}"]
             if _order == 'asc'
-              @comps = @comps.order(orderable_columns[idx])
+              @comps = @comps.order(orderable_columns[:index][idx])
             else
-              @comps = @comps.order(orderable_columns[idx]=>:desc)
+              @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
             end
           end
         end
       end
+
+      if orderable_columns.has_key? :default
+        orderable_columns[:default].each do |order|
+          @comps = @comps.order(order[0]=>order[1])
+        end
+      end
+
 
       # pagination
       if (params.has_key? :iDisplayStart) and (params.has_key? :iDisplayLength)
@@ -58,7 +68,7 @@ module DatatablesSupportable
     def as_datatables_json(params)
 
       @searchable_columns = []
-      @orderable_columns = []
+      @orderable_columns = {:default=>[],:index=>[]}
       @datatables_columns_idx = 0
       @datatables_mappings = {}
       yield self
@@ -93,7 +103,12 @@ module DatatablesSupportable
 
     def orderable(columns)
       columns.each_pair do |k,v|
-        @orderable_columns[v] = k
+        if v.kind_of? Array
+          @orderable_columns[k]<<v
+        else
+          @orderable_columns[:index][k] = v
+        end
+
       end
 
     end
