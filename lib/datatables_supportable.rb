@@ -36,17 +36,17 @@ module DatatablesSupportable
 
       #ordering
       if params[:iSortingCols].to_i > 0
-      #  params[:iSortingCols].to_i.times do |index|
-      #      idx =  params["iSortCol_#{index}"].to_i
-      #      if params.has_key? "sSortDir_#{index}"
+        params[:iSortingCols].to_i.times do |index|
+            idx =  params["iSortCol_#{index}"].to_i
+            if params.has_key? "sSortDir_#{index}"
       #        _order = params["sSortDir_#{index}"]
       #        if _order == 'asc'
       #          @comps = @comps.order(orderable_columns[:index][idx])
       #        else
       #          @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
       #        end
-      #      end
-      #  end
+            end
+        end
       end
 
       if orderable_columns.has_key? :default
