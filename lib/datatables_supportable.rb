@@ -35,7 +35,7 @@ module DatatablesSupportable
 
 
       #ordering
-      #if params[:iSortingCols].to_i > 0
+      if params[:iSortingCols].to_i > 0
       #  params[:iSortingCols].to_i.times do |index|
       #      idx =  params["iSortCol_#{index}"].to_i
       #      if params.has_key? "sSortDir_#{index}"
@@ -47,7 +47,7 @@ module DatatablesSupportable
       #        end
       #      end
       #  end
-      #end
+      end
 
       if orderable_columns.has_key? :default
         orderable_columns[:default].each do |order|
