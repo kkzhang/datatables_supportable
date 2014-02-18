@@ -41,6 +41,7 @@ module DatatablesSupportable
             if params.has_key? "sSortDir_#{index}"
               _order = params["sSortDir_#{index}"]
               if _order == 'asc'
+                puts orderable_columns.inspect
       #          @comps = @comps.order(orderable_columns[:index][idx])
       #        else
       #          @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
