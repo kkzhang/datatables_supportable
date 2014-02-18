@@ -42,7 +42,7 @@ module DatatablesSupportable
               _order = params["sSortDir_#{index}"]
               if _order == 'asc'
 
-      #          @comps = @comps.order(orderable_columns[:index][idx])
+                @comps = @comps.order(orderable_columns[:index][idx])
               else
                 logger.info
                 puts orderable_columns.inspect
