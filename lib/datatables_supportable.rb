@@ -45,7 +45,7 @@ module DatatablesSupportable
       #          @comps = @comps.order(orderable_columns[:index][idx])
               else
                 puts orderable_columns.inspect
-                puts "index:"+idx
+                puts "index:#{idx}"
       #          @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
               end
             end
