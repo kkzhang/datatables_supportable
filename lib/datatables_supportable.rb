@@ -42,6 +42,7 @@ module DatatablesSupportable
               _order = params["sSortDir_#{index}"]
               if _order == 'asc'
                 puts orderable_columns.inspect
+                puts "index:"+idx
       #          @comps = @comps.order(orderable_columns[:index][idx])
       #        else
       #          @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
