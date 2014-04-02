@@ -37,19 +37,19 @@ module DatatablesSupportable
       #ordering
       if params[:iSortingCols].to_i > 0
         params[:iSortingCols].to_i.times do |index|
-            idx =  params["iSortCol_#{index}"].to_i
-            if params.has_key? "sSortDir_#{index}"
-              _order = params["sSortDir_#{index}"]
-              if _order == 'asc'
+          idx =  params["iSortCol_#{index}"].to_i
+          if params.has_key? "sSortDir_#{index}"
+            _order = params["sSortDir_#{index}"]
+            if _order == 'asc'
 
-                @comps = @comps.order(orderable_columns[:index][idx])
-              else
-                logger.info
-                puts orderable_columns.inspect
-                puts "index:#{idx}"
-                @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
-              end
+              @comps = @comps.order(orderable_columns[:index][idx])
+            else
+              logger.info
+              puts orderable_columns.inspect
+              puts "index:#{idx}"
+              @comps = @comps.order(orderable_columns[:index][idx]=>:desc)
             end
+          end
         end
       end
 
@@ -90,8 +90,10 @@ module DatatablesSupportable
         _temp = {}
 
         @datatables_mappings.each_pair do |key,value|
-          _temp[key] = value.gsub(/\[\$([^\]]+)\]/) do |word|
-            c.send $1.to_sym
+          if value.class == Proc
+            _temp[key] = value.call(c)
+          else
+            _temp[key] = c.send(value.to_sym)
           end
 
         end
@@ -122,9 +124,9 @@ module DatatablesSupportable
       if not options.has_key? :name
 
         if options.has_key? :column
-          @datatables_mappings[@datatables_columns_idx] = "[$#{options[:column]}]"
+          @datatables_mappings[@datatables_columns_idx] = options[:column]
         else
-          @datatables_mappings[@datatables_columns_idx] = value
+          @datatables_mappings[@datatables_columns_idx] = options[:value]
         end
 
         @datatables_columns_idx += 1
